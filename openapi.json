@@ -1,26 +1,27 @@
 {
    "swagger": "2.0",
    "info": {
-      "description": "This is a demo of [LucyBot's API Documentation](http://lucybot.com) using swagger.io's Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.\n\nTo use this documentation for your own API, visit [http://lucybot.com](http://lucybot.com)",
+      "description": "",
       "version": "1.0.0",
-      "title": "Swagger Petstore",
-      "termsOfService": "http://swagger.io/terms/",
-      "contact": { "email": "apiteam@swagger.io" },
+      "title": "Allstore ecom",
+      "termsOfService": "http://api.allstore.com/terms/",
+      "contact": { "email": "allstore@gmail.com" },
       "license": { "name": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0.html" }
    },
-   "host": "petstore.swagger.io",
-   "basePath": "/v2",
+   "host": "api.allstore.com",
    "tags": [
       {
-         "name": "pet",
-         "description": "Everything about your Pets",
-         "externalDocs": { "description": "Find out more", "url": "http://swagger.io" }
-      },
-      { "name": "store", "description": "Access to Petstore orders" },
-      {
          "name": "user",
-         "description": "Operations about user",
-         "externalDocs": { "description": "Find out more about our store", "url": "http://swagger.io" }
+         "description": "Operations about your user"
+      },
+      { "name": "product", "description": "Operations about products" },
+      {
+         "name": "category",
+         "description": "Operations about category"
+      },
+      {
+         "name": "orders",
+         "description": "Operations about orders"
       }
    ],
    "schemes": ["http"],
@@ -239,7 +240,7 @@
       },
       "/store/inventory": {
          "get": {
-            "tags": ["store"],
+            "tags": ["product"],
             "summary": "Returns pet inventories by status",
             "description": "Returns a map of status codes to quantities",
             "operationId": "getInventory",
@@ -256,7 +257,7 @@
       },
       "/store/order": {
          "post": {
-            "tags": ["store"],
+            "tags": ["product"],
             "summary": "Place an order for a pet",
             "description": "",
             "operationId": "placeOrder",
@@ -278,7 +279,7 @@
       },
       "/store/order/{orderId}": {
          "get": {
-            "tags": ["store"],
+            "tags": ["product"],
             "summary": "Find purchase order by ID",
             "description": "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
             "operationId": "getOrderById",
@@ -302,7 +303,7 @@
             }
          },
          "delete": {
-            "tags": ["store"],
+            "tags": ["product"],
             "summary": "Delete purchase order by ID",
             "description": "For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors",
             "operationId": "deleteOrder",
@@ -553,30 +554,73 @@
          "properties": { "id": { "type": "integer", "format": "int64" }, "name": { "type": "string" } },
          "xml": { "name": "Tag" }
       },
-      "Pet": {
+      "Product": {
          "type": "object",
-         "required": ["name", "photoUrls"],
+         "required": ["name", "images"],
          "properties": {
             "id": { "type": "integer", "format": "int64" },
-            "category": { "$ref": "#/definitions/Category" },
-            "name": { "type": "string", "example": "doggie" },
-            "photoUrls": {
+            "categoryId": { "$ref": "#/definitions/Category" },
+            "name": { "type": "string", "example": "iphone 12" },
+            "slug": { "type": "string", "example": "iphone-12" },
+            "description": { "type": "string", "example": "product description" },
+            "shippingFee": { "type": "integer", "example": "80" },
+            "images": {
                "type": "array",
                "xml": { "name": "photoUrl", "wrapped": true },
-               "items": { "type": "string" }
+               "items": {
+                  "type": "object",
+                  "properties": { "name": { "type": "string" }, "path": { "type": "string" } }
+               }
             },
-            "tags": {
-               "type": "array",
-               "xml": { "name": "tag", "wrapped": true },
-               "items": { "$ref": "#/definitions/Tag" }
+            "variants": {
+               "type": "object",
+               "properties": {
+                  "images": {
+                     "type": "array",
+                     "items": {
+                        "type": "object",
+                        "properties": { "name": { "type": "string" }, "path": { "type": "string" } }
+                     }
+                  },
+                  "actualPrice": { "type": "string", "example": "100" },
+                  "sellingPrice": { "type": "string", "example": "150" },
+                  "sku": { "type": "string", "example": "ph-002" },
+                  "color": { "type": "string", "example": "red" },
+                  "customVariants": { "type": "string", "example": "string of json object" }
+               }
             },
-            "status": {
-               "type": "string",
-               "description": "pet status in the store",
-               "enum": ["available", "pending", "sold"]
-            }
+            "returns": {
+               "type": "object",
+               "properties": {
+                  "isReturnable": { "type": "boolean", "example": false },
+                  "scheme": { "type": "String", "example": "return scheme" },
+                  "description": { "type": "string", "example": "return scheme description" }
+               }
+            },
+            "warranty": {
+               "type": "object",
+               "properties": {
+                  "hasWarranty": { "type": "boolean", "example": true },
+                  "scheme": { "type": "String", "example": "warranty scheme" },
+                  "description": { "type": "string", "example": "warranty scheme description" }
+               }
+            },
+            "delivery": {
+               "type": "object",
+               "properties": {
+                  "scheme": { "type": "String", "example": "warranty scheme" },
+                  "price": { "type": "String", "example": "80" },
+                  "description": { "type": "string", "example": "warranty scheme description" }
+               }
+            },
+            "questionsCount": { "type": "integer" },
+            "reviewsCount": { "type": "number" },
+            "hasNewQuestions": { "type": "boolean" },
+            "hasNewReviews": { "type": "boolean" },
+            "isDisabled": { "type": "boolean" },
+            "createdAt": { "type": "date", "default": true }
          },
-         "xml": { "name": "Pet" }
+         "xml": { "name": "Product" }
       },
       "ApiResponse": {
          "type": "object",
