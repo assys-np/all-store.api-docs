@@ -20,7 +20,7 @@
          "description": "Operations about category"
       },
       {
-         "name": "orders",
+         "name": "order",
          "description": "Operations about orders"
       }
    ],
@@ -522,17 +522,64 @@
          "type": "object",
          "properties": {
             "id": { "type": "integer", "format": "int64" },
-            "petId": { "type": "integer", "format": "int64" },
-            "quantity": { "type": "integer", "format": "int32" },
+            "products": {
+               "type": "object",
+               "properties": {
+                  "productId": { "$ref": "#/definitions/Product" },
+                  "quantityCount": { "type": "integer", "format": "int32" },
+                  "title": { "type": "string" },
+                  "thumbnailImage": {
+                     "type": "object",
+                     "properties": { "name": { "type": "string" }, "path": { "type": "string" } }
+                  },
+                  "actualPrice": { "type": "integer" },
+                  "discountedPrice": { "type": "integer" },
+                  "shippingFee": { "type": "integer" }
+               }
+            },
+            "orderStatus": {
+               "type": "object",
+               "properties": {
+                  "status": {
+                     "type": "string",
+                     "enum": ["pending", "processing", "dispatched", "shipped", "delivered", "cancelled"]
+                  },
+                  "description": { "type": "string" },
+                  "udpatedAt": {
+                     "type": "string",
+                     "format": "date-time"
+                  }
+               }
+            },
+            "shippingAddress": { "type": "string" },
+            "billingAddress": { "type": "string" },
+            "isShippingBilling": { "type": "boolean", "default": false },
+            "orderedAt": { "type": "string", "format": "date-time" },
             "shipDate": { "type": "string", "format": "date-time" },
-            "status": { "type": "string", "description": "Order Status", "enum": ["placed", "approved", "delivered"] },
-            "complete": { "type": "boolean", "default": false }
+            "isComplete": { "type": "boolean", "default": false }
          },
          "xml": { "name": "Order" }
       },
       "Category": {
          "type": "object",
-         "properties": { "id": { "type": "integer", "format": "int64" }, "name": { "type": "string" } },
+         "properties": {
+            "id": { "type": "integer", "format": "int64" },
+            "name": { "type": "string" },
+            "parent": { "type": "string", "example": "/electronics" },
+            "slug": { "type": "string" },
+            "attributes": { "type": "string", "example": "color,price" },
+            "image": {
+               "type": "object",
+               "properties": {
+                  "name": { "type": "string" },
+                  "path": { "type": "string" }
+               }
+            },
+            "isDisabled": { "type": "boolean" },
+            "productsCount": { "type": "integer" },
+            "vendorsCount": { "type": "integer" },
+            "createdAt": { "type": "string", "format": "date-time" }
+         },
          "xml": { "name": "Category" }
       },
       "User": {
@@ -553,6 +600,25 @@
          "type": "object",
          "properties": { "id": { "type": "integer", "format": "int64" }, "name": { "type": "string" } },
          "xml": { "name": "Tag" }
+      },
+      "DeliveryGuy": {
+         "type": "object",
+         "properties": {
+            "id": { "type": "integer", "format": "int64" },
+            "assignedOrders": { "type": "array", "items": { "$ref": "#/definitions/Order" } },
+            "fullName": { "type": "string" },
+            "phone": { "type": "string" },
+            "password": { "type": "string" },
+            "photo": {
+               "type": "object",
+               "properties": {
+                  "name": { "type": "string" },
+                  "path": { "type": "string" }
+               }
+            },
+            "createdAt": { "type": "string", "format": "date-time" }
+         },
+         "xml": { "name": "DeliveryGuy" }
       },
       "Product": {
          "type": "object",
@@ -618,7 +684,7 @@
             "hasNewQuestions": { "type": "boolean" },
             "hasNewReviews": { "type": "boolean" },
             "isDisabled": { "type": "boolean" },
-            "createdAt": { "type": "date", "default": true }
+            "createdAt": { "type": "string", "format": "date-time" }
          },
          "xml": { "name": "Product" }
       },
